@@ -1,0 +1,1 @@
+ # Add-RichTextBox "ComputerName:$ComputerName`nPort:$port`nStatus:$status"
