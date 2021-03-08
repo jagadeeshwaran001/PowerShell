@@ -72,7 +72,7 @@ $AutomaticStoppedServices.Font = "Microsoft Sans Serif,8"
 $AutomaticStoppedServices.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(255, 255, 36)
 $AutomaticStoppedServices.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $AutomaticStoppedServices.Cursor = [System.Windows.Forms.Cursors]::Hand
-$AutomaticStoppedServices.Add_Click({ser})
+$AutomaticStoppedServices.Add_Click({autostopser})
 $Form.controls.Add($AutomaticStoppedServices) 
 
 
@@ -139,7 +139,7 @@ $Script:formt.MinimizeBox = $false
 $Script:formt.Visible = $false 
 } 
 
-function ser {
+function autostopser {
     $statusBar.Text=("Processing the request")
     progressbar 
     $outputBox.Clear() 
