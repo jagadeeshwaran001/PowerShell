@@ -1,8 +1,3 @@
-<# This form was created using POSHGUI.com  a free online gui designer for PowerShell
-.NAME
-    Untitled
-#>
-
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
