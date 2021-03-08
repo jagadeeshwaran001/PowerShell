@@ -62,18 +62,18 @@ $Form.controls.Add($Label6)
 # $PingButton.Font                    = 'Microsoft Sans Serif,10'
 # $PingButton.Cursor                  = [System.Windows.Forms.Cursors]::Hand
 
-$Button2                         = New-Object system.Windows.Forms.Button
-$Button2.text                    = "Automatic Stopped Services"
-$Button2.width                   = 75
-$Button2.height                  = 40
-$Button2.location                = New-Object System.Drawing.Point(608,63)
-$Button2.Font                    = 'Microsoft Sans Serif,10'
-$Button2.Font = "Microsoft Sans Serif,8" 
-$Button2.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(255, 255, 36)
-$Button2.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$Button2.Cursor = [System.Windows.Forms.Cursors]::Hand
-$Button2.Add_Click({ser})
-$Form.controls.Add($Button2) 
+$AutomaticStoppedServices                         = New-Object system.Windows.Forms.Button
+$AutomaticStoppedServices.text                    = "Automatic Stopped Services"
+$AutomaticStoppedServices.width                   = 75
+$AutomaticStoppedServices.height                  = 45
+$AutomaticStoppedServices.location                = New-Object System.Drawing.Point(608,63)
+$AutomaticStoppedServices.Font                    = 'Microsoft Sans Serif,10'
+$AutomaticStoppedServices.Font = "Microsoft Sans Serif,8" 
+$AutomaticStoppedServices.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(255, 255, 36)
+$AutomaticStoppedServices.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$AutomaticStoppedServices.Cursor = [System.Windows.Forms.Cursors]::Hand
+$AutomaticStoppedServices.Add_Click({ser})
+$Form.controls.Add($AutomaticStoppedServices) 
 
 
 $outputBox                       = New-Object System.Windows.Forms.TextBox 
