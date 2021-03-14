@@ -1,3 +1,20 @@
+param([switch]$Elevated)
+
+function Test-Admin {
+    $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
+    $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+}
+
+if ((Test-Admin) -eq $false)  {
+    if ($elevated) {
+        # tried to elevate, did not work, aborting
+    } else {
+        Start-Process powershell.exe -Verb RunAs -ArgumentList ('-noprofile -noexit -file "{0}" -elevated' -f ($myinvocation.MyCommand.Definition))
+    }
+    exit
+}
+
+'running with full privileges'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
@@ -64,7 +81,7 @@ $Form.controls.Add($Label6)
 
 $AutomaticStoppedServices                         = New-Object system.Windows.Forms.Button
 $AutomaticStoppedServices.text                    = "Automatic Stopped Services"
-$AutomaticStoppedServices.width                   = 75
+$AutomaticStoppedServices.width                   = 90
 $AutomaticStoppedServices.height                  = 45
 $AutomaticStoppedServices.location                = New-Object System.Drawing.Point(608,63)
 $AutomaticStoppedServices.Font                    = 'Microsoft Sans Serif,10'
@@ -73,7 +90,21 @@ $AutomaticStoppedServices.FlatAppearance.MouseOverBackColor = [System.Drawing.Co
 $AutomaticStoppedServices.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $AutomaticStoppedServices.Cursor = [System.Windows.Forms.Cursors]::Hand
 $AutomaticStoppedServices.Add_Click({autostopser})
-$Form.controls.Add($AutomaticStoppedServices) 
+$Form.controls.Add($AutomaticStoppedServices)
+
+$StartAutomaticStoppedServices                         = New-Object system.Windows.Forms.Button
+$StartAutomaticStoppedServices.text                    = "Start Automatic Stopped Services"
+$StartAutomaticStoppedServices.width                   = 90
+$StartAutomaticStoppedServices.height                  = 45
+$StartAutomaticStoppedServices.location                = New-Object System.Drawing.Point(703,63)
+$StartAutomaticStoppedServices.Font                    = 'Microsoft Sans Serif,10'
+$StartAutomaticStoppedServices.Font = "Microsoft Sans Serif,8" 
+$StartAutomaticStoppedServices.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(255, 255, 36)
+$StartAutomaticStoppedServices.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$StartAutomaticStoppedServices.Cursor = [System.Windows.Forms.Cursors]::Hand
+$StartAutomaticStoppedServices.Add_Click({start_service})
+$Form.controls.Add($StartAutomaticStoppedServices) 
+
 
 
 $outputBox                       = New-Object System.Windows.Forms.TextBox 
@@ -147,14 +178,44 @@ function autostopser {
     $date =Get-Date
     $ct = "Task Completed @ " + $date 
     $Script:formt.Visible=$true 
-    $Proces_list =@()
+    $custom_array = @()
     foreach ($computer in $computers)
     {
         $Script:formt.text="Working on $computer" 
-        $Proces_list += Get-Service -ComputerName $computer | where{$_.StartType -eq "automatic" -and $_.status -eq "Stopped"} | Select Name, Starttype ,status
+        $custom_array  = Get-Service -ComputerName $computer | where{$_.StartType -eq "automatic" -and $_.status -eq "Stopped"} | Select  Status,Starttype,name  
+        $multiple_output = $custom_array |Format-Table -AutoSize | Out-String
+        #$Proces_res = $Proces_list|ft | Out-String -OutputMode Multiple
+        #$Proces_res = $custom_array |ft -AutoSize |Out-String |Out-GridView -OutputMode Multiple
+        $outputBox.Appendtext("`n" +  $multiple_output + "`n $ct")
+        $statusBar.Text=("Ready")
+        $Script:formt.close()
     }
-    $pros = $Proces_list | Format-Table | Out-String
-    $outputBox.Appendtext("{0}`n" -f $pros + "`n $ct")
+    # $Proces_res = $custom_array|ft | Out-String -OutputMode Multiple
+    # $outputBox.Appendtext("{0}`n" -f  $Proces_res + "`n $ct")
+    # $statusBar.Text=("Ready")
+    # $Script:formt.close()
+}
+function start_service {
+    $computers=$TextBox1.lines.Split("`n")
+    $date =Get-Date
+    $outputBox.Clear() 
+    $ct = "Task Completed @ " + $date 
+    $Script:formt.Visible=$true 
+    $custom_array = @()
+    foreach ($computer in $computers)
+    {
+        $Script:formt.text="Working on $computer" 
+        $custom_array  = Get-Service -ComputerName $computer | where{$_.StartType -eq "automatic" -and $_.status -eq "Stopped"} | Select  Status,Starttype,name  
+    }
+    $statusBar.Text=("Processing the request")
+    progressbar 
+    foreach($array in $custom_array)
+    {
+        $Script:formt.text="Working on $computer" 
+        $arr = Start-Service -name $array
+    }        
+    $multiple_output = $arr | Format-Table -AutoSize | Out-String
+    $outputBox.Appendtext("`n" +  $multiple_output + "`n $ct")
     $statusBar.Text=("Ready")
     $Script:formt.close()
 }
